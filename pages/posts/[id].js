@@ -1,33 +1,40 @@
+import Head from 'next/head'
 import React from 'react'
 import Link from 'next/link';
-import Head from 'next/head';
+
 import marked from  'marked'
 
 import Layout from '../../components/layout'
 import LibCommon from '../../libs/LibCommon'
+import LibCms from '../../libs/LibCms'
 //
-export default function Page({ blog, category_name }) {
-// console.log(blog)
-  var content = marked(blog.content)
+export default function Page({ blog }) {
+//console.log(blog)
   return (
     <Layout>
     <Head><title key="title">{blog.title}</title></Head>      
-    <div className="container">
-      <Link href="/" >
-        <a className="btn btn-outline-primary mt-2">Back</a>
+    <div className="container bg-light">
+      <Link href="/home" >
+        <a className="btn btn-light btnx-outline-cyan mt-2">Back</a>
       </Link>
       <hr className="mt-2 mb-2" />
       <div className="show_head_wrap">
-          <i className="fas fa-home"></i> >
-          {blog.title}
+        <i className="bi bi-house-fill mx-2"></i> >
+          &nbsp;{blog.title}
       </div>
-      <hr /> 
-      <h1>{blog.title}</h1>
-      Date: {blog.created_at}<br />
-      Category : {category_name}
-      <hr />
-      <div id="post_item" dangerouslySetInnerHTML={{__html: `${content}`}}></div>
-      <hr />                 
+      <div className="card shadow-sm my-2">
+        <div className="card-body">
+          <h1>{blog.title}</h1>
+          Date: {blog.created_at}<br />
+          Category : {blog.category.name }
+        </div>
+      </div>
+      <div className="card shadow-sm mt-2 mb-4">
+        <div className="card-body">
+          <div id="post_item" dangerouslySetInnerHTML={{__html: `${blog.content}`}}>
+          </div>
+        </div>
+      </div>                       
     </div>
     <style>{`
       div#post_item > p > img{
@@ -46,48 +53,43 @@ export default function Page({ blog, category_name }) {
 }
 //
 export const getStaticPaths = async () => {
-  var content = "posts"
-  var site_id = process.env.MY_SITE_ID  
-  const res = await fetch(
-    process.env.BASE_URL + `/api/get/find?content=${content}&site_id=${site_id}`
-  );
-  const repos = await res.json();
+  var dt = LibCommon.formatDate( new Date(), "YYYY-MM-DD_hhmmss");
+  var url = process.env.MY_JSON_URL+ '?' + dt
+  const req = await fetch( url );
+  const json = await req.json();  
+  var items = json.items     
   var paths = []
-  repos.map((item, index) => {
+  items.map((item, index) => {
     var row = { params: 
-      { id: item.id } 
+      { id: item.save_id } 
     }
     paths.push(row)
   })
-// console.log(paths)
+//console.log(paths)
   return {
     paths: paths,
     fallback: false
   } 
 };
 export const getStaticProps = async context => {
-  const postId = context.params.id
-  var content = "posts"
-  var url = process.env.BASE_URL + `/api/get/findone?content=${content}&id=${postId}`
-// console.log(url)
-  const res = await fetch( url);
-  var blog = await res.json(); 
-  blog  =  LibCommon.convertItemDate(blog)
-  var category_name = ""
-  if(blog.category_id !="0"){
-    var url_categ = process.env.BASE_URL +`/api/get/findone?content=category&id=${blog.category_id}`
-    const res_categ = await fetch(url_categ)    
-    const json_categ = await res_categ.json()  
-    category_name = json_categ.name
-  }
-// console.log(json_categ)
+  const id = context.params.id
+//console.log(id)
+  var dt = LibCommon.formatDate( new Date(), "YYYY-MM-DD_hhmmss");
+  var url = process.env.MY_JSON_URL+ '?' + dt
+  const req = await fetch( url );
+  const json = await req.json();  
+  var items = json.items 
+  items = LibCommon.convert_items( items )
+  var item  = LibCms.get_show_item( items, String(id) )
+  item.content = marked(item.content)
+  item = LibCms.get_post_itemOne(item , json.category_items)
+//console.log(d)  
+//console.log(json.category_items )  
   return {
     props: { 
-      blog: blog,
-      category_name: category_name
+      blog: item,
     },
   }
   
 };
-
 

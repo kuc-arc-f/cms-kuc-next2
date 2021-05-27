@@ -6,46 +6,16 @@
 
  date    : 2021/03/02
 
- update  : 2021/04/08
+ update  : 2021/05/27
 
 ***
 ### Summary
 
-Next.js /SSG + Headless CMS ,  custom content
-
-***
-### Setup
-
-npm install
-
-***
-### Setup , etc
-
-* .env
-
-site_id: 
-
-setting required, headless-1 site_id (Top > site > Open)
-
-```
-MY_SITE_ID=1234
-```
-
-BASE_URL: if change Headless CMS URL,
-
-```
-BASE_URL=http://localhost:3001
-```
+Github pages, file
 
 ***
 ### start server
-* Start :
-
-yarn dev
-
-* build:
-
-yarn deploy
+* yarn dev
 
 
 ***

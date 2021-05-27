@@ -1,4 +1,4 @@
-// LibCmsEdit_3
+// LibCms
 
 //
 export default {
@@ -11,7 +11,7 @@ export default {
       var ret = null;
       items.forEach(function(item){
 //console.log(item.show_id );
-          if(item.show_id === String(id) ){
+          if(item.save_id === String(id) ){
               ret = item
           }
       });
@@ -31,7 +31,7 @@ export default {
       var ret = {
           id: 0,
           name: "",
-          save_id: "id0",
+          save_id: "",
       };
       items.forEach(function(item){
 //console.log(item.show_id );
@@ -54,8 +54,8 @@ export default {
   get_category_items: function(items, id){
     var ret = [];
     items.forEach(function(item){
-//console.log(item.category_id );
-      if(item.category_id === String(id) ){
+//console.log(item.category.save_id);
+      if(item.category.save_id === String(id) ){
         ret.push(item)
       }
     });
@@ -88,7 +88,7 @@ export default {
       item.category = { name: ""}
       categories.forEach(function (category){
 //         if( item.category_id.toString() === category._id.toString()){
-        if( item.category_id === category._id ){
+        if( item.category_id === category.save_id ){
           item.category = category ;
         }
       });

@@ -10,7 +10,6 @@ import LibCms from '../../libs/LibCms'
 //
 function Page(data) {
   var items = data.blogs
-//  var paginateDisp = data.display
 //  var page = data.page
   var category_name = data.category_name
 //console.log("display=", data.display)  
@@ -19,23 +18,23 @@ function Page(data) {
       <Head><title key="title">{category_name} | {data.site_name}</title>
       </Head> 
       <div className="body_main_wrap">
-        <div className="container">
-          <Link href="/" >
-            <a className="btn btn-outline-primary mt-2">Back</a>
+        <div className="container bg-white">
+          <Link href="/home" >
+            <a className="btn btn-outline-dark mt-2">Back</a>
           </Link>          
           <div className="body_wrap">
             <div id="post_items_box" className="row conte mt-2 mb-4">
               <div className="col-sm-12">
                 <div id="div_news">
-                  <h2 className="h4_td_title mt-2 mb-2">Category : {category_name}
+                  <h2 className="myblog_color_accent mt-2 mb-2">Category : {category_name}
                   </h2>
                 </div>
                 <hr />
               </div>
               {items.map((item, index) => {
-//                console.log(item.id ,item.createdAt )
+// console.log(item )
                 return (<IndexRow key={index}
-                  id={item.id} title={item.title}
+                  id={item.save_id} title={item.title}
                   date={item.created_at} />       
                 )
               })}
@@ -50,48 +49,43 @@ function Page(data) {
 //
 export const getStaticProps = async context => {
   const id = context.params.id;
-//console.log("id=", id )
-  var content = "posts"
-  var site_id = process.env.MY_SITE_ID
-  var url_category = process.env.BASE_URL + `/api/get/findone?content=${content}&id=${id}`
-  const resCategory = await fetch(url_category)
-  var jsonCategory = await resCategory.json();
-  var category_name = jsonCategory.name
-//console.log(category_name)
-  var url = process.env.BASE_URL + `/api/get/find?content=${content}&site_id=${site_id}`
-  const res = await fetch(url);
-  var blogs = await res.json();
-  blogs = LibCommon.convert_items(blogs)
-  blogs = LibCms.get_category_items(blogs, id)
-// console.log(blogs)
+console.log("id=", id )
+  var dt = LibCommon.formatDate( new Date(), "YYYY-MM-DD_hhmmss");
+  var url = process.env.MY_JSON_URL+ '?' + dt
+  const req = await fetch( url );
+  const json = await req.json();  
+  var items = json.items 
+  items =  LibCommon.get_reverse_items(items)
+  items = LibCms.get_category_items(items, id)
+  var category = LibCms.get_category_item(json.category_items, id)
+//console.log(category)
   return {
     props : {
-      blogs: blogs, display: 0, 
+      blogs: items, display: 0, 
       site_name : process.env.MY_SITE_NAME,
-      category_name: category_name,
+      category_name: category.name,
     }
   };
 }
 //
-export async function getStaticPaths() {
-  var content = "category"
-  var site_id = process.env.MY_SITE_ID  
-  const res = await fetch(
-    process.env.BASE_URL + `/api/get/find?content=${content}&site_id=${site_id}`
-  );
-  const repos = await res.json();
+export const getStaticPaths = async () => {
+  var dt = LibCommon.formatDate( new Date(), "YYYY-MM-DD_hhmmss");
+  var url = process.env.MY_JSON_URL+ '?' + dt
+  const req = await fetch( url );
+  const json = await req.json();  
+  var items = json.category_items     
   var paths = []
-  repos.map((item, index) => {
+  items.map((item, index) => {
     var row = { params: 
-      { id: item.id } 
+      { id: item.save_id } 
     }
     paths.push(row)
   })
-// console.log(paths)
+//console.log(paths)
   return {
     paths: paths,
     fallback: false
-  }
-}
+  } 
+};
 
 export default Page

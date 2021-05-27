@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       BASE_URL: ${{secrets.BASE_URL}}
+      MY_JSON_URL: ${{secrets.MY_JSON_URL}}
       MY_SITE_ID: ${{secrets.MY_SITE_ID}}
+      MY_SITE_INFO: ${{secrets.MY_SITE_INFO}}
       MY_SITE_NAME: Next.js 初級編
     steps:
     - uses: actions/checkout@v2

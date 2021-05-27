@@ -6,7 +6,7 @@ function Page(props) {
   var site_name = props.site_name
   var info_text = props.info_text
   return (
-  <div className="main_title_wrap">
+  <div className="main_title_wrap myblog_bgcolor_sub">
     <div id="div_img_layer">
       <h1>{site_name}
       <br />

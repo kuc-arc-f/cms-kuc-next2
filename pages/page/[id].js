@@ -1,5 +1,4 @@
 import React from 'react'
-//import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 
@@ -14,76 +13,78 @@ function Page(data) {
   var items = data.blogs
   var paginateDisp = data.display
   var page = data.page
-//console.log("display=", data.display)  
+//console.log(items)  
   return (
     <Layout>
       <Head><title key="title">{data.site_name}</title></Head> 
-      <TopHeadBox site_name={data.site_name} />
       <div className="body_main_wrap">
+        <TopHeadBox site_name={data.site_name} />
         <div className="container">
           <div className="body_wrap">
             <div id="post_items_box" className="row conte mt-2 mb-4">
               <div className="col-sm-12">
-                <div id="div_news">
-                  <h2 className="h4_td_title mt-2 mb-2" >Post</h2>
-                </div>
               </div>
+              <div id="div_news">
+                <h2 className="myblog_color_accent mt-2 mb-2" >Post</h2>
+              </div>
+              <div className="posts_items_row mb-2">
               {items.map((item, index) => {
 //                console.log(item.id ,item.createdAt )
                 return (<IndexRow key={index}
-                  id={item.id} title={item.title}
+                  id={item.id} save_id={item.save_id} title={item.title}
                   date={item.created_at} />       
                 )
               })}
-              <hr /> 
+              </div>
               <PagingBox page={page} paginateDisp={paginateDisp} />            
             </div>
           </div>          
         </div>
       </div>
+      <style>{`
+      .card_col_body{ text-align: left; width: 100%;}
+      .card_col_icon{ font-size: 2.4rem; }
+      .task_card_box{ width : 75%;}
+      `}</style>      
     </Layout>
     )  
 }
 //
 export const getStaticProps = async context => {
   const page = context.params.id;
-  var content = "posts"
-  var site_id = process.env.MY_SITE_ID
-//console.log("page=", page)
-  var url_count = process.env.BASE_URL+`/api/get/count?content=${content}&site_id=${site_id}`
-  const resCount = await fetch(url_count);
-  const jSoncount = await resCount.json();
-  const count = jSoncount.count
-//console.log("count=", jSoncount.count )
   LibPagenate.init()
   var pageInfo=LibPagenate.get_page_start(page)
-  var url = process.env.BASE_URL + `/api/get/find?content=${content}&site_id=${site_id}`
-  url += `&skip=${pageInfo.start}&limit=${pageInfo.limit}`
-  const res = await fetch(url);
-  var blogs = await res.json();
-  blogs = LibCommon.convert_items(blogs)
-  var display = LibPagenate.is_next_display(page, parseInt(count) )
 //console.log("disp=" , display)
+  var dt = LibCommon.formatDate( new Date(), "YYYY-MM-DD_hhmmss");
+  var url = process.env.MY_JSON_URL+ '?' + dt
+  const req = await fetch( url );
+  const json = await req.json();  
+  var items = json.items
+  var item_len = items.length 
+  items =  LibCommon.get_reverse_items(items)
+  LibPagenate.init()
+  items = LibPagenate.getOnepageItems(items, pageInfo.start , pageInfo.end )
+// console.log(item_len)
+  var display = LibPagenate.is_next_display(page, parseInt(item_len) )
   return {
     props : {
-      blogs: blogs, display: display, page: page,
+      blogs: items, display: display, page: page,
       site_name : process.env.MY_SITE_NAME,
     }
   };
 }
 export async function getStaticPaths() {
-  var content = "posts"
-  var site_id = process.env.MY_SITE_ID
-  const res = await fetch(
-    process.env.BASE_URL + `/api/get/find?content=${content}&site_id=${site_id}`
-  );
-  const blogs = await res.json(); 
-//console.log( "len=", blogs.length ) 
-  LibPagenate.init()
-  var pageMax =LibPagenate.get_max_page(blogs.length)
-//console.log( "pageMax=", pageMax)
-  pageMax = Math.ceil(pageMax)
   var paths = []
+  var dt = LibCommon.formatDate( new Date(), "YYYY-MM-DD_hhmmss");
+  var url = process.env.MY_JSON_URL+ '?' + dt
+  const req = await fetch( url );
+  const json = await req.json();  
+  var items = json.items 
+  items =  LibCommon.get_reverse_items(items)  
+  LibPagenate.init()
+  var pageMax =LibPagenate.get_max_page(items.length)
+  pageMax = Math.ceil(pageMax)
+//console.log( "pageMax=", pageMax )
   for(var i= 1 ; i<= pageMax; i++ ){
     var item = {
       params : {
@@ -92,7 +93,7 @@ export async function getStaticPaths() {
     }
     paths.push(item)
   }
-// console.log( paths )
+//console.log( items )
   return {
     paths: paths,
     fallback: false,
