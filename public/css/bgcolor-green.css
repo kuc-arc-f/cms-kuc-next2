@@ -1,15 +1,15 @@
 
 .myblog_bgcolor_main{
-  background: #512da8;  
+  background: #4caf50;  
 }
 .myblog_bgcolor_sub{
-  background : #9575cd;
+  background : #66bb6a;
 }
 .myblog_bgcolor_accent{
-  background : var(--bs-cyan);
+  background : var(--bs-orange);
 }
 /* color */
 .myblog_color_accent{
- color : var(--bs-cyan);
+ color : var(--bs-orange);
  font-weight: bold;
 }

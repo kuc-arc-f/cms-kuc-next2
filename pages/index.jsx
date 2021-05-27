@@ -49,7 +49,7 @@ export default function Index(props) {
         text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
         box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
       }  
-      .body_wrap{ background: #03a9f4; }    
+      .body_wrap{ background: #4caf50; }    
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;

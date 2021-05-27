@@ -16,7 +16,7 @@ const IndexRow = props => (
           </div>
           <div className="py-2  py-md-3 px-4 ms-auto text-center">
             <Link href={`/posts/${props.save_id}`}>
-            <a className="btn btn-secondary btnx-pink">show</a>
+            <a className="btn btn-secondary btnx-orange">show</a>
             </Link>
           </div>
         </div>

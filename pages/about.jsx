@@ -6,7 +6,7 @@ export default function Home() {
   <Layout>
     <div className="container">
       <h1 className="mt-2">About</h1>
-      <p>jamstackの関連記事を公開予定しております。</p>
+      <p>Next.jsの関連記事を公開予定しております。</p>
       <hr />
       <p>Date: 2021/02/15</p>
       <hr />
